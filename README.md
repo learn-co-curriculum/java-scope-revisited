@@ -112,13 +112,7 @@ anotherMethod block scope: 1 5
 - A *simple* name is a single identifier, such as `age` or `ssn`.
 - A *qualified* name consists of a name, a `.`, and an identifier, such as `this.age` or `employee1.ssn`.
 
-Shadowing happens a variable declared in one scope (the nested scope)
-has the same name as a variable declared in the enclosing scope.
-In this case, the declaration in the nested scope
-*shadows* the declaration of the enclosing scope.  The variable in the enclosing
-scope can't be accessed in the nested scope using its simple name, we would need to use a qualified name.
-
-Let's look at an example.
+Consider the `Person` class:
 
 ```java
 public class Person {
@@ -145,7 +139,27 @@ public class Person {
 }
 ```
 
-We'll set a breakpoint at the first line of code in the `update` method.
+- Instance variables declared in class (enclosing scope): `age`, `city`, `state`.
+- Local/parameter variables declared in `update` method (nested scope): `age`, `city`.
+
+Shadowing happens when a variable is declared in one scope (the nested scope)
+and has the same name as a variable declared in an enclosing scope.
+In this case, the declaration in the nested scope
+*shadows* the declaration of the enclosing scope.  The variable in the enclosing
+scope can't be accessed in the nested scope using its simple name, we would need to use a qualified name.
+
+A variable declared in the `update` method shadows the instance variable with the same name:
+
+- The instance variable named `city` is shadowed by the parameter named `city`.
+- The instance variable named `age` is shadowed by the local variable named `age`.
+- The instance variable named `state` is not shadowed.
+
+This means instance variables `city` and `age` can't be accessed using their simple
+names, they must be accessed as `this.city` and `this.age`.  Any assignment using just
+`city` or `age` is to the parameter or local variable, not the instance variable.
+
+Let's step through the `update` method to observe variable shadowing in action.
+Set a breakpoint at the first line of code in the `update` method.
 
 ![shadow set breakpoint](https://curriculum-content.s3.amazonaws.com/6676/java-methods/shadow_breakpoint.png)
 
@@ -155,7 +169,9 @@ instance method, we also see `this` referencing the `Person` instance.
 
 ![shadow breakpoint reached](https://curriculum-content.s3.amazonaws.com/6676/java-methods/shadow_breakpoint_reached.png)
 
-Stepping through the `update` method:
+Stepping through the `update` method, we see new values assigned
+to the local variable `age` and parameter variable `city`,
+rather than the instance variable with the same name:
 
 | Code                           | Visualizer                                                                                                                                                                |
 |--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -163,9 +179,8 @@ Stepping through the `update` method:
 | `city =  city.substring(0,5);` | ![shadow update step2](https://curriculum-content.s3.amazonaws.com/6676/java-methods/shadow_update_step2.png) <br>Parameter variable <code>city</code> is assigned value. | 
 | `state = "OH";`                | ![shadow update step3](https://curriculum-content.s3.amazonaws.com/6676/java-methods/shadow_update_step3.png) <br>Instance variable <code>state</code> is assigned value. |
 
-Returning to the `main` method, we see the `state` instance variable was updated, but
-not `age` or `city` since they were shadowed by the local variable and the parameter variable
-declared in the `update` method.
+Returning from the `update` method to the `main` method, we see
+the `state` instance variable was updated, but not `age` or `city`.
 
 ![shadow return to main](https://curriculum-content.s3.amazonaws.com/6676/java-methods/shadow_return.png)
 
